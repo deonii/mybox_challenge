@@ -6,18 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRequestDTO {
 
-    @NotEmpty(message = "email은 필수 항목 입니다.")
+    @NotBlank
     private String email;
 
-    @NotNull
+    @NotBlank
     private String password;
 }

@@ -25,4 +25,10 @@ public class UserDAOImpl implements UserDAO {
         boolean existUser = userRepository.existsByEmail(email);
         return existUser;
     }
+
+    @Override
+    public UserEntity findByEmail(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email);
+        return userEntity;
+    }
 }

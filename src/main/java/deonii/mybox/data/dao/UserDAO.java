@@ -6,4 +6,6 @@ public interface UserDAO {
     UserEntity saveUser(UserEntity user);
 
     Boolean checkEmail(String email);
+
+    UserEntity findByEmail(String email);
 }

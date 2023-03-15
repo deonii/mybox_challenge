@@ -54,4 +54,8 @@ public class UserEntity {
     public void encryptPassword(PasswordEncoder passwordEncoder) {
         password = passwordEncoder.encode(password);
     }
+
+    public boolean matchPassword(PasswordEncoder passwordEncoder, String password) {
+        return passwordEncoder.matches(password, this.password);
+    }
 }

@@ -8,6 +8,7 @@ import deonii.mybox.data.entity.SessionEntity;
 import deonii.mybox.data.entity.UserEntity;
 import deonii.mybox.data.repository.UserRepository;
 import deonii.mybox.error.CustomException;
+import deonii.mybox.functions.UserFunctions;
 import deonii.mybox.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +31,21 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDAO userDAO;
 
-    @Autowired
-    private SessionDAO sessionDAO;
+//    @Autowired
+//    private SessionDAO sessionDAO;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Value("${session.cookie.name}")
-    private String cookieName;
+    @Autowired
+    private UserFunctions userFunctions;
+
+//    @Value("${session.cookie.name}")
+//    private String cookieName;
 
     @Override
     public UserResponseDTO signup(UserRequestDTO userRequestDTO,
                                   HttpServletResponse response) {
-        System.out.println(this.cookieName);
         boolean isExistUser = userDAO.checkEmail(userRequestDTO.getEmail());
 
         if(isExistUser) {
@@ -56,7 +59,7 @@ public class UserServiceImpl implements UserService {
         UserEntity saveUser = userDAO.saveUser(user);
 
         // 저장된 유저 데이터로 세션 생성 및 쿠키 생성
-        SessionEntity saveSession = createSession(saveUser, response);
+        SessionEntity saveSession = userFunctions.createSession(saveUser, response);
 
         UserResponseDTO userResponseDTO = new UserResponseDTO("Sign Up", saveSession.getCreateAt(), saveSession.getExpireAt());
         return userResponseDTO;
@@ -78,8 +81,8 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(NOT_CORRECT_PASSWORD);
         }
 
-        deleteSession(request, response);
-        SessionEntity session = createSession(userEntity, response);
+        userFunctions.deleteSession(request, response);
+        SessionEntity session = userFunctions.createSession(userEntity, response);
 
         UserResponseDTO userResponseDTO = new UserResponseDTO("Log In", session.getCreateAt(), session.getExpireAt());
 
@@ -88,43 +91,43 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO logout(HttpServletRequest request, HttpServletResponse response) {
-        deleteSession(request, response);
+        userFunctions.deleteSession(request, response);
         UserResponseDTO userResponseDTO = new UserResponseDTO("Log Out", LocalDateTime.now(), LocalDateTime.now());
         return userResponseDTO;
     }
 
-    public SessionEntity createSession(UserEntity user, HttpServletResponse response) {
-        SessionEntity sessionEntity = new SessionEntity(user);
-        SessionEntity saveSession = sessionDAO.saveSession(sessionEntity);
-
-        Cookie mySessionCookie = new Cookie(cookieName, saveSession.getSessionId().toString());
-        mySessionCookie.setMaxAge(1000 * 60 * 60 * 24 * 7);
-        response.addCookie(mySessionCookie);
-        return saveSession;
-    }
-
-    public void deleteSession(HttpServletRequest request, HttpServletResponse response) {
-        Cookie mySessionCookie = findCookie(request);
-        if(mySessionCookie == null) return;
-        String stringSessionId = mySessionCookie.getValue();
-        UUID sessionId = UUID.fromString(stringSessionId);
-        SessionEntity sessionEntity = sessionDAO.findBySessionId(sessionId);
-        if(sessionEntity == null) return;
-        sessionDAO.deleteSession(sessionEntity);
-        expireCookie(response);
-    }
-
-    public Cookie findCookie(HttpServletRequest request) {
-        if(request.getCookies() == null) return null;
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(cookieName))
-                .findAny()
-                .orElse(null);
-    }
-
-    public void expireCookie(HttpServletResponse response) {
-        Cookie deleteCookie = new Cookie(cookieName, null);
-        deleteCookie.setMaxAge(0);
-        response.addCookie(deleteCookie);
-    }
+//    public SessionEntity createSession(UserEntity user, HttpServletResponse response) {
+//        SessionEntity sessionEntity = new SessionEntity(user);
+//        SessionEntity saveSession = sessionDAO.saveSession(sessionEntity);
+//
+//        Cookie mySessionCookie = new Cookie(cookieName, saveSession.getSessionId().toString());
+//        mySessionCookie.setMaxAge(1000 * 60 * 60 * 24 * 7);
+//        response.addCookie(mySessionCookie);
+//        return saveSession;
+//    }
+//
+//    public void deleteSession(HttpServletRequest request, HttpServletResponse response) {
+//        Cookie mySessionCookie = findCookie(request);
+//        if(mySessionCookie == null) return;
+//        String stringSessionId = mySessionCookie.getValue();
+//        UUID sessionId = UUID.fromString(stringSessionId);
+//        SessionEntity sessionEntity = sessionDAO.findBySessionId(sessionId);
+//        if(sessionEntity == null) return;
+//        sessionDAO.deleteSession(sessionEntity);
+//        expireCookie(response);
+//    }
+//
+//    public Cookie findCookie(HttpServletRequest request) {
+//        if(request.getCookies() == null) return null;
+//        return Arrays.stream(request.getCookies())
+//                .filter(cookie -> cookie.getName().equals(cookieName))
+//                .findAny()
+//                .orElse(null);
+//    }
+//
+//    public void expireCookie(HttpServletResponse response) {
+//        Cookie deleteCookie = new Cookie(cookieName, null);
+//        deleteCookie.setMaxAge(0);
+//        response.addCookie(deleteCookie);
+//    }
 }

@@ -41,4 +41,10 @@ public class UserController {
         UserResponseDTO userResponseDTO = userService.logout(request, response);
         return userResponseDTO;
     }
+
+    @GetMapping("/hello")
+    public UUID hello(HttpServletRequest request) {
+        UUID userUuid = (UUID) request.getAttribute("userUuid");
+        return userUuid;
+    }
 }

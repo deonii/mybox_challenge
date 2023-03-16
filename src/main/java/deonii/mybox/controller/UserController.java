@@ -43,8 +43,8 @@ public class UserController {
     }
 
     @GetMapping("/hello")
-    public UUID hello(HttpServletRequest request) {
+    public String hello(HttpServletRequest request) {
         UUID userUuid = (UUID) request.getAttribute("userUuid");
-        return userUuid;
+        return "hello : " + userUuid.toString();
     }
 }

@@ -12,4 +12,8 @@ public class MyboxApplication {
 		SpringApplication.run(MyboxApplication.class, args);
 	}
 
+	static {
+		System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
+	}
+
 }

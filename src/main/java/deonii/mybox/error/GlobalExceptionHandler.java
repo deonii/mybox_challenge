@@ -5,8 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-//import static deonii.mybox.error.ErrorCode.INTERNAL_SERVER_ERROR;
-
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

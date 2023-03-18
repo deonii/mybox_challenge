@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @Transactional
 @AllArgsConstructor
@@ -31,4 +33,11 @@ public class UserDAOImpl implements UserDAO {
         UserEntity userEntity = userRepository.findByEmail(email);
         return userEntity;
     }
+
+    @Override
+    public void updateLastLogin(UserEntity user) {
+        user.setLastLogin(LocalDateTime.now());
+    }
+
+
 }

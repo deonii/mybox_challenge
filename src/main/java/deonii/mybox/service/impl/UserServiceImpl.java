@@ -9,6 +9,7 @@ import deonii.mybox.data.entity.UserEntity;
 import deonii.mybox.data.repository.UserRepository;
 import deonii.mybox.error.CustomException;
 import deonii.mybox.functions.UserFunctions;
+import deonii.mybox.service.FolderService;
 import deonii.mybox.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserFunctions userFunctions;
 
+    @Autowired
+    private FolderService folderService;
+
     @Override
     public UserResponseDTO signup(UserRequestDTO userRequestDTO,
                                   HttpServletResponse response) {
@@ -51,6 +55,8 @@ public class UserServiceImpl implements UserService {
         user.encryptPassword(passwordEncoder);
 
         UserEntity saveUser = userDAO.saveUser(user);
+
+        folderService.createFolder(saveUser.getUuid().toString() + "/");
 
         // 저장된 유저 데이터로 세션 생성 및 쿠키 생성
         SessionEntity saveSession = userFunctions.createSession(saveUser, response);
@@ -74,6 +80,8 @@ public class UserServiceImpl implements UserService {
         if(!isMatch) {
             throw new CustomException(NOT_CORRECT_PASSWORD);
         }
+
+        userDAO.updateLastLogin(userEntity);
 
         userFunctions.deleteSession(request, response);
         SessionEntity session = userFunctions.createSession(userEntity, response);

@@ -8,4 +8,6 @@ public interface UserDAO {
     Boolean checkEmail(String email);
 
     UserEntity findByEmail(String email);
+
+    void updateLastLogin(UserEntity user);
 }

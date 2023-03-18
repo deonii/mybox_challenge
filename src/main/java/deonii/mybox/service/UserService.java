@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 public interface UserService {
-    public UserResponseDTO signup(UserRequestDTO userRequestDTO, HttpServletResponse response);
+    UserResponseDTO signup(UserRequestDTO userRequestDTO, HttpServletResponse response);
 
-    public UserResponseDTO login(UserRequestDTO userRequestDTO, HttpServletRequest request, HttpServletResponse response);
+    UserResponseDTO login(UserRequestDTO userRequestDTO, HttpServletRequest request, HttpServletResponse response);
 
-    public UserResponseDTO logout(HttpServletRequest request, HttpServletResponse response);
+    UserResponseDTO logout(HttpServletRequest request, HttpServletResponse response);
 }

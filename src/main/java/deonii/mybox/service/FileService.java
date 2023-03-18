@@ -6,5 +6,5 @@ import deonii.mybox.data.dto.FileResponseDTO;
 import java.io.IOException;
 
 public interface FileService {
-    public FileResponseDTO uploadFile(FileRequestDTO fileRequestDTO) throws IOException;
+    FileResponseDTO uploadFile(FileRequestDTO fileRequestDTO) throws IOException;
 }

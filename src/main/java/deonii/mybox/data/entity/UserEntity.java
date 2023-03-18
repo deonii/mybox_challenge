@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,6 +40,9 @@ public class UserEntity {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
+    @Column(name = "upload_volume", nullable = false)
+    private long uploadVolume;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
     private List<FolderEntity> folders;
 
@@ -49,6 +53,7 @@ public class UserEntity {
         email = userRequestDTO.getEmail();
         password = userRequestDTO.getPassword();
         lastLogin = LocalDateTime.now();
+        uploadVolume = 30000000;
     }
 
     public void encryptPassword(PasswordEncoder passwordEncoder) {

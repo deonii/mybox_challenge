@@ -4,6 +4,7 @@ import deonii.mybox.data.dao.SessionDAO;
 import deonii.mybox.data.dao.UserDAO;
 import deonii.mybox.data.dto.UserRequestDTO;
 import deonii.mybox.data.dto.UserResponseDTO;
+import deonii.mybox.data.entity.FolderEntity;
 import deonii.mybox.data.entity.SessionEntity;
 import deonii.mybox.data.entity.UserEntity;
 import deonii.mybox.data.repository.UserRepository;
@@ -56,7 +57,9 @@ public class UserServiceImpl implements UserService {
 
         UserEntity saveUser = userDAO.saveUser(user);
 
-        folderService.createFolder(saveUser.getUuid().toString() + "/");
+        // 개인 유저의 폴더 생성(uuid를 폴더명으로 함)
+        FolderEntity folderEntity = new FolderEntity(saveUser.getUuid().toString(), null, saveUser);
+        folderService.createFolder(folderEntity);
 
         // 저장된 유저 데이터로 세션 생성 및 쿠키 생성
         SessionEntity saveSession = userFunctions.createSession(saveUser, response);

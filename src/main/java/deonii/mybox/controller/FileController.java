@@ -22,15 +22,6 @@ import java.io.IOException;
 @RestController
 public class FileController {
 
-//    @Value("${cloud.aws.s3.bucket}")
-//    private String bucket;
-//
-//    @Autowired
-//    private AmazonS3Client amazonS3Client;
-//
-//    @Autowired
-//    private S3Config s3Config;
-
     @Autowired
     private FileService fileService;
 

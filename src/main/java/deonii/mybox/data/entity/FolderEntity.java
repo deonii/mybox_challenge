@@ -1,5 +1,7 @@
 package deonii.mybox.data.entity;
 
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Getter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "folder")
@@ -46,4 +49,12 @@ public class FolderEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "folder", cascade = CascadeType.ALL)
     private List<FileEntity> files;
+
+    @Builder
+    public FolderEntity(String name, FolderEntity parent, UserEntity user) {
+        this.name = name;
+        this.updatedAt = LocalDateTime.now();
+        this.parent = parent;
+        this.owner = user;
+    }
 }

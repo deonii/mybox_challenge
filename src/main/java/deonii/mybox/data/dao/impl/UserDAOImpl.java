@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -37,6 +38,12 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public void updateLastLogin(UserEntity user) {
         user.setLastLogin(LocalDateTime.now());
+    }
+
+    @Override
+    public UserEntity findByUuid(UUID uuid) {
+        UserEntity userEntity = userRepository.findByUuid(uuid);
+        return userEntity;
     }
 
 

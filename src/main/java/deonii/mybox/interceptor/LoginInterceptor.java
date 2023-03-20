@@ -32,7 +32,6 @@ public class LoginInterceptor implements HandlerInterceptor {
             request.setAttribute("userUuid", null);
             return true;
         }
-        System.out.println(11);
 
         String stringSessionId = cookie.getValue();
         UUID sessionId = UUID.fromString(stringSessionId);
@@ -41,7 +40,6 @@ public class LoginInterceptor implements HandlerInterceptor {
             request.setAttribute("userUuid", null);
             return true;
         }
-        System.out.println(22);
 
         UUID userUuid = sessionEntity.getUserUuid();
         request.setAttribute("userUuid", userUuid);

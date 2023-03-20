@@ -28,6 +28,9 @@ public class FolderEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "parent_path")
+    private String parentPath;
+
     @CreatedDate
     @Column(name = "create_at", updatable = false)
     private LocalDateTime createAt;
@@ -54,7 +57,12 @@ public class FolderEntity {
     public FolderEntity(String name, FolderEntity parent, UserEntity user) {
         this.name = name;
         this.updatedAt = LocalDateTime.now();
-        this.parent = parent;
+        if(parent != null) {
+            this.parentPath = parent.getParentPath() + parent.getName() + "/";
+            this.parent = parent;
+        } else {
+            this.parentPath = "";
+        }
         this.owner = user;
     }
 }

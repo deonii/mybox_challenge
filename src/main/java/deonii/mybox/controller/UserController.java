@@ -19,7 +19,6 @@ public class UserController {
 
     private final UserService userService;
 
-
     @PostMapping("/signup")
     public UserResponseDTO signup(@Valid @RequestBody UserRequestDTO userRequestDTO,
                        HttpServletResponse response) {

@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
         // 개인 유저의 폴더 생성(uuid를 폴더명으로 함)
         FolderEntity folderEntity = new FolderEntity(saveUser.getUuid().toString(), null, saveUser);
-        folderService.createFolder(folderEntity);
+        folderService.createRootFolder(folderEntity);
 
         // 저장된 유저 데이터로 세션 생성 및 쿠키 생성
         SessionEntity saveSession = userFunctions.createSession(saveUser, response);

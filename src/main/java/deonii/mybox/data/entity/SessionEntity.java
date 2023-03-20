@@ -23,7 +23,7 @@ public class SessionEntity {
     @Column(name = "session_id", unique = true, nullable = false, updatable = false)
     private UUID sessionId;
 
-    @Column(name = "user_uuid", unique = true, nullable = false, updatable = false)
+    @Column(name = "user_uuid", nullable = false, updatable = false)
     private UUID userUuid;
 
     @Column(name = "create_at")

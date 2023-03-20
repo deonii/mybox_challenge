@@ -1,5 +1,6 @@
 package deonii.mybox.service.impl;
 
+import deonii.mybox.data.dao.FolderDAO;
 import deonii.mybox.data.dao.UserDAO;
 import deonii.mybox.data.dto.ResponseDTO;
 import deonii.mybox.data.dto.UserRequestDTO;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.UUID;
 
 import static deonii.mybox.error.ErrorCode.*;
 
@@ -26,6 +28,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDAO userDAO;
+
+    @Autowired
+    private FolderDAO folderDAO;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -99,6 +104,22 @@ public class UserServiceImpl implements UserService {
         userFunctions.deleteSession(request, response);
 
         ResponseDTO responseDTO = new ResponseDTO(200, "Log Out", LocalDateTime.now(), null);
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO getUserInfo(UUID userUuid) {
+        UserEntity userEntity = userDAO.findByUuid(userUuid);
+        if(userEntity == null) {
+            throw new CustomException(NOT_EXISTS_UUID);
+        }
+        FolderEntity rootFolderEntity = folderDAO.findByNameAndParentPath(userUuid.toString(), "");
+
+        HashMap<String, Object> body = new HashMap<>();
+        body.put("user_info", userEntity);
+        body.put("root_folder_uuid", rootFolderEntity.getUuid());
+
+        ResponseDTO responseDTO = new ResponseDTO(200, "SUCCESS", LocalDateTime.now(), body);
         return responseDTO;
     }
 }

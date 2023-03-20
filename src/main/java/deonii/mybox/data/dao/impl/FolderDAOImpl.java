@@ -32,6 +32,12 @@ public class FolderDAOImpl implements FolderDAO {
     }
 
     @Override
+    public FolderEntity findByNameAndParentPath(String name, String parentPath) {
+        FolderEntity folderEntity = folderRepository.findByNameAndParentPath(name, parentPath);
+        return folderEntity;
+    }
+
+    @Override
     public boolean existsByNameAndParentPath(String name, String parentPath) {
         boolean isExists = folderRepository.existsByNameAndParentPath(name, parentPath);
         return isExists;

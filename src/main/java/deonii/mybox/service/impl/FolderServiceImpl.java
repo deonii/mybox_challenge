@@ -74,7 +74,7 @@ public class FolderServiceImpl implements FolderService {
         HashMap<String, Object> body = new HashMap<>();
         body.put("folder_path", parentPath + folderName);
 
-        ResponseDTO responseDTO = new ResponseDTO(201, "Folder Created", LocalDateTime.now(), body);
+        ResponseDTO responseDTO = new ResponseDTO(201, "SUCCESS", LocalDateTime.now(), body);
 
         return responseDTO;
     }
@@ -95,9 +95,11 @@ public class FolderServiceImpl implements FolderService {
 
         HashMap<String, Object> body = new HashMap<>();
         body.put("folder_list", folderEntityList);
-        body.put("parent_uuid", folderEntity.getParent().getUuid());
+        if(folderEntity.getParent() != null) {
+            body.put("parent_uuid", folderEntity.getParent().getUuid());
+        }
 
-        ResponseDTO responseDTO = new ResponseDTO(200, "Get Folder list", LocalDateTime.now(), body);
+        ResponseDTO responseDTO = new ResponseDTO(200, "SUCCESS", LocalDateTime.now(), body);
         return responseDTO;
     }
 

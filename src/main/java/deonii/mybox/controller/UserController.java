@@ -1,17 +1,15 @@
 package deonii.mybox.controller;
 
 
+import deonii.mybox.data.dto.ResponseDTO;
 import deonii.mybox.data.dto.UserRequestDTO;
-import deonii.mybox.data.dto.UserResponseDTO;
 import deonii.mybox.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -20,24 +18,24 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public UserResponseDTO signup(@Valid @RequestBody UserRequestDTO userRequestDTO,
-                       HttpServletResponse response) {
-        UserResponseDTO userResponseDTO = userService.signup(userRequestDTO, response);
-        return userResponseDTO;
+    public ResponseDTO signup(@Valid @RequestBody UserRequestDTO userRequestDTO,
+                              HttpServletResponse response) {
+        ResponseDTO responseDTO = userService.signup(userRequestDTO, response);
+        return responseDTO;
     }
 
     @PostMapping("/login")
-    public UserResponseDTO login(@Valid @RequestBody UserRequestDTO userRequestDTO,
+    public ResponseDTO login(@Valid @RequestBody UserRequestDTO userRequestDTO,
                                   HttpServletRequest request,
                                   HttpServletResponse response) {
-        UserResponseDTO userResponseDTO = userService.login(userRequestDTO, request, response);
-        return userResponseDTO;
+        ResponseDTO responseDTO = userService.login(userRequestDTO, request, response);
+        return responseDTO;
     }
 
     @PostMapping("/signout")
-    public UserResponseDTO logout(HttpServletRequest request,
+    public ResponseDTO logout(HttpServletRequest request,
                                   HttpServletResponse response) {
-        UserResponseDTO userResponseDTO = userService.logout(request, response);
-        return userResponseDTO;
+        ResponseDTO responseDTO = userService.logout(request, response);
+        return responseDTO;
     }
 }

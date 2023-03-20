@@ -1,5 +1,7 @@
 package deonii.mybox.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import deonii.mybox.data.dto.UserRequestDTO;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -31,6 +33,7 @@ public class UserEntity {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(name = "create_at", updatable = false)
@@ -43,9 +46,11 @@ public class UserEntity {
     @Column(name = "upload_volume", nullable = false)
     private long uploadVolume;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
     private List<FolderEntity> folders;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
     private List<FileEntity> files;
 

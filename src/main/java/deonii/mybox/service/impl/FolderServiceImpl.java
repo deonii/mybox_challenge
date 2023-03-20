@@ -6,7 +6,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import deonii.mybox.data.dao.FolderDAO;
 import deonii.mybox.data.dao.UserDAO;
 import deonii.mybox.data.dto.FolderRequestDTO;
-import deonii.mybox.data.dto.FolderResponseDTO;
+import deonii.mybox.data.dto.ResponseDTO;
 import deonii.mybox.data.entity.FolderEntity;
 import deonii.mybox.data.entity.UserEntity;
 import deonii.mybox.error.CustomException;
@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import static deonii.mybox.error.ErrorCode.*;
@@ -46,7 +48,7 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public FolderResponseDTO createFolder(FolderRequestDTO folderRequestDTO, UUID parentUuid, UUID userUuid) {
+    public ResponseDTO createFolder(FolderRequestDTO folderRequestDTO, UUID parentUuid, UUID userUuid) {
         UserEntity userEntity = userDAO.findByUuid(userUuid);
         if(userEntity == null) {
             throw new CustomException(NOT_EXISTS_UUID);
@@ -69,9 +71,34 @@ public class FolderServiceImpl implements FolderService {
         FolderEntity saveFolderEntity = new FolderEntity(folderName, parentFolderEntity, userEntity);
         folderDAO.createFolder(saveFolderEntity);
 
-        FolderResponseDTO folderResponseDTO = new FolderResponseDTO("Folder Created", LocalDateTime.now());
+        HashMap<String, Object> body = new HashMap<>();
+        body.put("folder_path", parentPath + folderName);
 
-        return folderResponseDTO;
+        ResponseDTO responseDTO = new ResponseDTO(201, "Folder Created", LocalDateTime.now(), body);
+
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO browseFolder(UUID folderUuid, UUID userUuid) {
+        UserEntity userEntity = userDAO.findByUuid(userUuid);
+        if(userEntity == null) {
+            throw new CustomException(NOT_EXISTS_UUID);
+        }
+
+        FolderEntity folderEntity = folderDAO.findByUuid(folderUuid);
+        if(folderEntity == null) {
+            throw new CustomException(NOT_EXISTS_FOLDER);
+        }
+
+        List<FolderEntity> folderEntityList = folderDAO.findByParentUuid(folderUuid);
+
+        HashMap<String, Object> body = new HashMap<>();
+        body.put("folder_list", folderEntityList);
+        body.put("parent_uuid", folderEntity.getParent().getUuid());
+
+        ResponseDTO responseDTO = new ResponseDTO(200, "Get Folder list", LocalDateTime.now(), body);
+        return responseDTO;
     }
 
 

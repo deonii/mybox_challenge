@@ -1,15 +1,13 @@
 package deonii.mybox.controller;
 
 import deonii.mybox.data.dto.FolderRequestDTO;
-import deonii.mybox.data.dto.FolderResponseDTO;
+import deonii.mybox.data.dto.ResponseDTO;
 import deonii.mybox.error.CustomException;
+import deonii.mybox.functions.UserFunctions;
 import deonii.mybox.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -23,19 +21,26 @@ public class FolderController {
     @Autowired
     private FolderService folderService;
 
+    @Autowired
+    private UserFunctions userFunctions;
+
     @PostMapping("/folder/{folderUuid}")
-    public FolderResponseDTO createFolder(@PathVariable UUID folderUuid,
-                                          @Valid @RequestBody FolderRequestDTO folderRequestDTO,
-                                          HttpServletRequest request
+    public ResponseDTO createFolder(@PathVariable UUID folderUuid,
+                                    @Valid @RequestBody FolderRequestDTO folderRequestDTO,
+                                    HttpServletRequest request
                              ) {
-        UUID userUuid = (UUID) request.getAttribute("userUuid");
+        UUID userUuid = userFunctions.getUserUuidFromRequest(request);
 
-        if(userUuid == null) {
-            throw new CustomException(NOT_AUTHORIZATION);
-        }
-
-        FolderResponseDTO folderResponseDTO = folderService.createFolder(folderRequestDTO, folderUuid, userUuid);
-        return folderResponseDTO;
+        ResponseDTO responseDTO = folderService.createFolder(folderRequestDTO, folderUuid, userUuid);
+        return responseDTO;
     }
 
+    @GetMapping("/folder/{folderUuid}")
+    public ResponseDTO browseFolder(@PathVariable UUID folderUuid,
+                                          HttpServletRequest request) {
+        UUID userUuid = userFunctions.getUserUuidFromRequest(request);
+
+        ResponseDTO responseDTO = folderService.browseFolder(folderUuid, userUuid);
+        return responseDTO;
+    }
 }

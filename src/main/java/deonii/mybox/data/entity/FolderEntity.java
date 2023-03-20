@@ -1,8 +1,10 @@
 package deonii.mybox.data.entity;
 
+import com.fasterxml.jackson.annotation.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -40,16 +42,20 @@ public class FolderEntity {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "parent_uuid")
     private FolderEntity parent;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade = CascadeType.ALL)
     private List<FolderEntity> children;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "user_uuid")
     private UserEntity owner;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "folder", cascade = CascadeType.ALL)
     private List<FileEntity> files;
 

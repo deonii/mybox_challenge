@@ -4,6 +4,7 @@ import deonii.mybox.data.dao.SessionDAO;
 import deonii.mybox.data.dao.UserDAO;
 import deonii.mybox.data.entity.SessionEntity;
 import deonii.mybox.data.entity.UserEntity;
+import deonii.mybox.error.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.UUID;
+
+import static deonii.mybox.error.ErrorCode.NOT_AUTHORIZATION;
 
 @Component
 public class UserFunctions {
@@ -60,5 +63,14 @@ public class UserFunctions {
         Cookie deleteCookie = new Cookie(cookieName, null);
         deleteCookie.setMaxAge(0);
         response.addCookie(deleteCookie);
+    }
+
+    public UUID getUserUuidFromRequest(HttpServletRequest request) {
+        UUID userUuid = (UUID) request.getAttribute("userUuid");
+
+        if(userUuid == null) {
+            throw new CustomException(NOT_AUTHORIZATION);
+        }
+        return userUuid;
     }
 }

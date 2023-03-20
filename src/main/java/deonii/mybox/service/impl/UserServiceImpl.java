@@ -1,29 +1,23 @@
 package deonii.mybox.service.impl;
 
-import deonii.mybox.data.dao.SessionDAO;
 import deonii.mybox.data.dao.UserDAO;
+import deonii.mybox.data.dto.ResponseDTO;
 import deonii.mybox.data.dto.UserRequestDTO;
-import deonii.mybox.data.dto.UserResponseDTO;
 import deonii.mybox.data.entity.FolderEntity;
 import deonii.mybox.data.entity.SessionEntity;
 import deonii.mybox.data.entity.UserEntity;
-import deonii.mybox.data.repository.UserRepository;
 import deonii.mybox.error.CustomException;
 import deonii.mybox.functions.UserFunctions;
 import deonii.mybox.service.FolderService;
 import deonii.mybox.service.UserService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.HashMap;
 
 import static deonii.mybox.error.ErrorCode.*;
 
@@ -43,8 +37,8 @@ public class UserServiceImpl implements UserService {
     private FolderService folderService;
 
     @Override
-    public UserResponseDTO signup(UserRequestDTO userRequestDTO,
-                                  HttpServletResponse response) {
+    public ResponseDTO signup(UserRequestDTO userRequestDTO,
+                              HttpServletResponse response) {
         boolean isExistUser = userDAO.checkEmail(userRequestDTO.getEmail());
 
         if(isExistUser) {
@@ -64,12 +58,15 @@ public class UserServiceImpl implements UserService {
         // 저장된 유저 데이터로 세션 생성 및 쿠키 생성
         SessionEntity saveSession = userFunctions.createSession(saveUser, response);
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO("Sign Up", saveSession.getCreateAt(), saveSession.getExpireAt());
-        return userResponseDTO;
+        HashMap<String, Object> body = new HashMap<>();
+        body.put("expire_at", saveSession.getExpireAt());
+
+        ResponseDTO responseDTO = new ResponseDTO(201, "Sign Up", saveSession.getCreateAt(), body);
+        return responseDTO;
     }
 
     @Override
-    public UserResponseDTO login(UserRequestDTO userRequestDTO,
+    public ResponseDTO login(UserRequestDTO userRequestDTO,
                                  HttpServletRequest request,
                                  HttpServletResponse response) {
         boolean isExistUser = userDAO.checkEmail(userRequestDTO.getEmail());
@@ -89,15 +86,19 @@ public class UserServiceImpl implements UserService {
         userFunctions.deleteSession(request, response);
         SessionEntity session = userFunctions.createSession(userEntity, response);
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO("Log In", session.getCreateAt(), session.getExpireAt());
+        HashMap<String, Object> body = new HashMap<>();
+        body.put("expire_at", session.getExpireAt());
 
-        return userResponseDTO;
+        ResponseDTO responseDTO = new ResponseDTO(200, "Log In", session.getCreateAt(), body);
+
+        return responseDTO;
     }
 
     @Override
-    public UserResponseDTO logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseDTO logout(HttpServletRequest request, HttpServletResponse response) {
         userFunctions.deleteSession(request, response);
-        UserResponseDTO userResponseDTO = new UserResponseDTO("Log Out", LocalDateTime.now(), LocalDateTime.now());
-        return userResponseDTO;
+
+        ResponseDTO responseDTO = new ResponseDTO(200, "Log Out", LocalDateTime.now(), null);
+        return responseDTO;
     }
 }

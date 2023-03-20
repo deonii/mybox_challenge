@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -34,5 +35,11 @@ public class FolderDAOImpl implements FolderDAO {
     public boolean existsByNameAndParentPath(String name, String parentPath) {
         boolean isExists = folderRepository.existsByNameAndParentPath(name, parentPath);
         return isExists;
+    }
+
+    @Override
+    public List<FolderEntity> findByParentUuid(UUID folderUuid) {
+        List<FolderEntity> folderEntityList = folderRepository.findByParent_Uuid(folderUuid);
+        return folderEntityList;
     }
 }

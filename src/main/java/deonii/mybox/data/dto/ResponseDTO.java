@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponseDTO {
+public class ResponseDTO {
+    private int status;
     private String message;
     private LocalDateTime timestamp;
-    @JsonProperty("expire_at")
-    private LocalDateTime expireAt;
+    private HashMap<String, Object> body;
 }

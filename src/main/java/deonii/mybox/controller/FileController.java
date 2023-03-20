@@ -8,16 +8,20 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import deonii.mybox.config.S3Config;
 import deonii.mybox.data.dto.FileRequestDTO;
 import deonii.mybox.data.dto.FileResponseDTO;
+import deonii.mybox.data.dto.ResponseDTO;
+import deonii.mybox.functions.UserFunctions;
 import deonii.mybox.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 @RestController
 public class FileController {
@@ -25,13 +29,18 @@ public class FileController {
     @Autowired
     private FileService fileService;
 
-    @PostMapping("/file")
-    private FileResponseDTO uploadToS3(FileRequestDTO fileRequestDTO) throws IOException {
-        FileResponseDTO fileResponseDTO = fileService.uploadFile(fileRequestDTO);
-        return fileResponseDTO;
+    @Autowired
+    private UserFunctions userFunctions;
 
+    @PostMapping("/folder/{folderUuid}/file")
+    private ResponseDTO uploadFile(@PathVariable UUID folderUuid,
+                                   @Valid FileRequestDTO fileRequestDTO,
+                                   HttpServletRequest request
+                                   ) throws IOException {
+        UUID userUuid = userFunctions.getUserUuidFromRequest(request);
 
-
+        ResponseDTO responseDTO = fileService.uploadFile(fileRequestDTO, folderUuid, userUuid);
+        return responseDTO;
     }
 
 }

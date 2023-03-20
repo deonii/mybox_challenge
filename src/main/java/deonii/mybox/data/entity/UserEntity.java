@@ -43,8 +43,8 @@ public class UserEntity {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
-    @Column(name = "upload_volume", nullable = false)
-    private long uploadVolume;
+    @Column(name = "extra_volume", nullable = false)
+    private long extraVolume;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", cascade = CascadeType.ALL)
@@ -58,7 +58,7 @@ public class UserEntity {
         email = userRequestDTO.getEmail();
         password = userRequestDTO.getPassword();
         lastLogin = LocalDateTime.now();
-        uploadVolume = 30000000;
+        extraVolume = 30000000;
     }
 
     public void encryptPassword(PasswordEncoder passwordEncoder) {

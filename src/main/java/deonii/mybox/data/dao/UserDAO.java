@@ -14,4 +14,6 @@ public interface UserDAO {
     void updateLastLogin(UserEntity user);
 
     UserEntity findByUuid(UUID uuid);
+
+    void updateExtraVolume(UserEntity userEntity, Long fileSize);
 }

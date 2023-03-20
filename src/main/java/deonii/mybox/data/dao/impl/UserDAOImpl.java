@@ -46,5 +46,8 @@ public class UserDAOImpl implements UserDAO {
         return userEntity;
     }
 
-
+    @Override
+    public void updateExtraVolume(UserEntity userEntity, Long fileSize) {
+        userEntity.setExtraVolume(userEntity.getExtraVolume() - fileSize);
+    }
 }

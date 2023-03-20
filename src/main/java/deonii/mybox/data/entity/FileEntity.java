@@ -1,5 +1,7 @@
 package deonii.mybox.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Getter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "file")
@@ -42,10 +45,21 @@ public class FileEntity {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "folder_uuid")
     private FolderEntity folder;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "user_uuid")
     private UserEntity owner;
+
+    public FileEntity(String name, Long size, String type, String path, FolderEntity folder, UserEntity user) {
+        this.name = name;
+        this.size = size;
+        this.type = type;
+        this.path = path;
+        this.folder = folder;
+        this.owner = user;
+    }
 }

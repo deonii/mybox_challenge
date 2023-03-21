@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -39,5 +40,11 @@ public class FileDAOImpl implements FileDAO {
     @Override
     public void deleteFile(FileEntity fileEntity) {
         fileRepository.delete(fileEntity);
+    }
+
+    @Override
+    public List<FileEntity> findFileByFolderUuid(UUID folderUuid) {
+        List<FileEntity> fileEntityList = fileRepository.findByFolder_Uuid(folderUuid);
+        return fileEntityList;
     }
 }

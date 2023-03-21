@@ -3,10 +3,12 @@ package deonii.mybox.service.impl;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import deonii.mybox.data.dao.FileDAO;
 import deonii.mybox.data.dao.FolderDAO;
 import deonii.mybox.data.dao.UserDAO;
 import deonii.mybox.data.dto.FolderRequestDTO;
 import deonii.mybox.data.dto.ResponseDTO;
+import deonii.mybox.data.entity.FileEntity;
 import deonii.mybox.data.entity.FolderEntity;
 import deonii.mybox.data.entity.UserEntity;
 import deonii.mybox.error.CustomException;
@@ -38,6 +40,9 @@ public class FolderServiceImpl implements FolderService {
 
     @Autowired
     private UserDAO userDAO;
+
+    @Autowired
+    private FileDAO fileDAO;
 
     @Override
     public void createRootFolder(FolderEntity folderEntity) {
@@ -92,9 +97,11 @@ public class FolderServiceImpl implements FolderService {
         }
 
         List<FolderEntity> folderEntityList = folderDAO.findByParentUuid(folderUuid);
+        List<FileEntity> fileEntityList = fileDAO.findFileByFolderUuid(folderUuid);
 
         HashMap<String, Object> body = new HashMap<>();
         body.put("folder_list", folderEntityList);
+        body.put("file_list", fileEntityList);
         if(folderEntity.getParent() != null) {
             body.put("parent_uuid", folderEntity.getParent().getUuid());
         }

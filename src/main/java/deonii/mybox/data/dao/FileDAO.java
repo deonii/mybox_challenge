@@ -3,6 +3,7 @@ package deonii.mybox.data.dao;
 import deonii.mybox.data.entity.FileEntity;
 import deonii.mybox.data.entity.SessionEntity;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface FileDAO {
@@ -13,4 +14,6 @@ public interface FileDAO {
     FileEntity findByUuid(UUID fileUuid);
 
     void deleteFile(FileEntity fileEntity);
+
+    List<FileEntity> findFileByFolderUuid(UUID folderUuid);
 }

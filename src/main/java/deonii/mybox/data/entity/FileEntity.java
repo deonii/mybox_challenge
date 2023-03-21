@@ -34,6 +34,7 @@ public class FileEntity {
     private String type;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String path;
 
     @CreatedDate

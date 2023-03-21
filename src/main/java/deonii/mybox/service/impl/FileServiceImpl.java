@@ -1,6 +1,7 @@
 package deonii.mybox.service.impl;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import deonii.mybox.data.dao.FileDAO;
@@ -69,6 +70,10 @@ public class FileServiceImpl implements FileService {
             throw new CustomException(NOT_EXISTS_FOLDER);
         }
 
+        if(!folderEntity.getOwner().equals(userEntity)) {
+            throw new CustomException(NOT_EXISTS_FOLDER);
+        }
+
         boolean isExists = fileDAO.existsByNameAndFolderUuid(fileName, folderUuid);
         if(isExists) {
             throw new CustomException(ALREADY_EXISTS_FILE);
@@ -93,6 +98,40 @@ public class FileServiceImpl implements FileService {
         return responseDTO;
     }
 
+    @Override
+    public ResponseDTO deleteFile(UUID folderUuid, UUID fileUuid, UUID userUuid) {
+        UserEntity userEntity = userDAO.findByUuid(userUuid);
+        if(userEntity == null) {
+            throw new CustomException(NOT_EXISTS_UUID);
+        }
+
+        FolderEntity folderEntity = folderDAO.findByUuid(folderUuid);
+        if(folderEntity == null) {
+            throw new CustomException(NOT_EXISTS_FOLDER);
+        }
+
+        FileEntity fileEntity = fileDAO.findByUuid(fileUuid);
+        if(fileEntity == null) {
+            throw new CustomException(NOT_EXISTS_FILE);
+        }
+
+        if(!fileEntity.getFolder().equals(folderEntity)) {
+            throw new CustomException(NOT_EXISTS_FILE);
+        }
+
+        if(!fileEntity.getOwner().equals(userEntity)) {
+            throw new CustomException(NOT_EXISTS_FILE);
+        }
+
+        String filePath = folderEntity.getParentPath() + folderEntity.getName() + "/" + fileEntity.getName();
+
+        deleteFileInS3(filePath);
+        fileDAO.deleteFile(fileEntity);
+
+        ResponseDTO responseDTO = new ResponseDTO(200, "DELETE", LocalDateTime.now(), null);
+        return responseDTO;
+    }
+
     private String uploadFileToS3(MultipartFile file, String filePath) throws IOException {
         String fileName = file.getOriginalFilename();
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -102,5 +141,10 @@ public class FileServiceImpl implements FileService {
         amazonS3Client.putObject(putObjectRequest);
         String path = amazonS3Client.getUrl(bucket, fileName).toString();
         return path;
+    }
+
+    private void deleteFileInS3(String filePath) {
+        DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, filePath);
+        amazonS3Client.deleteObject(deleteObjectRequest);
     }
 }

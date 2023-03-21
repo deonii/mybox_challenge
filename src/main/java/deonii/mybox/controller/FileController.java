@@ -43,4 +43,14 @@ public class FileController {
         return responseDTO;
     }
 
+    @DeleteMapping("/folder/{folderUuid}/file/{fileUuid}")
+    private ResponseDTO deleteFile(@PathVariable UUID folderUuid,
+                                   @PathVariable UUID fileUuid,
+                                   HttpServletRequest request) {
+        UUID userUuid = userFunctions.getUserUuidFromRequest(request);
+
+        ResponseDTO responseDTO = fileService.deleteFile(folderUuid, fileUuid, userUuid);
+        return responseDTO;
+    }
+
 }

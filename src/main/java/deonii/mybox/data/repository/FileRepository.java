@@ -9,4 +9,6 @@ import java.util.UUID;
 
 public interface FileRepository extends JpaRepository<FileEntity, UUID> {
     boolean existsByNameAndFolder_Uuid(String name, UUID folderUuid);
+
+    FileEntity findByUuid(UUID fileUuid);
 }

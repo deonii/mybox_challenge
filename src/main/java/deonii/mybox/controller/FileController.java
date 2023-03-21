@@ -1,25 +1,18 @@
 package deonii.mybox.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import deonii.mybox.config.S3Config;
 import deonii.mybox.data.dto.FileRequestDTO;
-import deonii.mybox.data.dto.FileResponseDTO;
 import deonii.mybox.data.dto.ResponseDTO;
 import deonii.mybox.functions.UserFunctions;
 import deonii.mybox.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -33,7 +26,7 @@ public class FileController {
     private UserFunctions userFunctions;
 
     @PostMapping("/folder/{folderUuid}/file")
-    private ResponseDTO uploadFile(@PathVariable UUID folderUuid,
+    public ResponseDTO uploadFile(@PathVariable UUID folderUuid,
                                    @Valid FileRequestDTO fileRequestDTO,
                                    HttpServletRequest request
                                    ) throws IOException {
@@ -44,13 +37,23 @@ public class FileController {
     }
 
     @DeleteMapping("/folder/{folderUuid}/file/{fileUuid}")
-    private ResponseDTO deleteFile(@PathVariable UUID folderUuid,
+    public ResponseDTO deleteFile(@PathVariable UUID folderUuid,
                                    @PathVariable UUID fileUuid,
                                    HttpServletRequest request) {
         UUID userUuid = userFunctions.getUserUuidFromRequest(request);
 
         ResponseDTO responseDTO = fileService.deleteFile(folderUuid, fileUuid, userUuid);
         return responseDTO;
+    }
+
+    @GetMapping("/folder/{folderUuid}/file/{fileUuid}")
+    public StreamingResponseBody getFile(@PathVariable UUID folderUuid,
+                                         @PathVariable UUID fileUuid,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response) {
+        UUID userUuid = userFunctions.getUserUuidFromRequest(request);
+
+        return fileService.downloadFile(folderUuid, fileUuid, userUuid, response);
     }
 
 }

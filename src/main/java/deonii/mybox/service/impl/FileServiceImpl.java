@@ -1,14 +1,12 @@
 package deonii.mybox.service.impl;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.IOUtils;
 import deonii.mybox.data.dao.FileDAO;
 import deonii.mybox.data.dao.FolderDAO;
 import deonii.mybox.data.dao.UserDAO;
 import deonii.mybox.data.dto.FileRequestDTO;
-import deonii.mybox.data.dto.FileResponseDTO;
 import deonii.mybox.data.dto.ResponseDTO;
 import deonii.mybox.data.entity.FileEntity;
 import deonii.mybox.data.entity.FolderEntity;
@@ -17,10 +15,18 @@ import deonii.mybox.error.CustomException;
 import deonii.mybox.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.UUID;
@@ -132,6 +138,34 @@ public class FileServiceImpl implements FileService {
         return responseDTO;
     }
 
+    @Override
+    public StreamingResponseBody downloadFile(UUID folderUuid, UUID fileUuid, UUID userUuid, HttpServletResponse response) {
+        UserEntity userEntity = userDAO.findByUuid(userUuid);
+        if(userEntity == null) {
+            throw new CustomException(NOT_EXISTS_UUID);
+        }
+
+        FolderEntity folderEntity = folderDAO.findByUuid(folderUuid);
+        if(folderEntity == null) {
+            throw new CustomException(NOT_EXISTS_FOLDER);
+        }
+
+        FileEntity fileEntity = fileDAO.findByUuid(fileUuid);
+        if(fileEntity == null) {
+            throw new CustomException(NOT_EXISTS_FILE);
+        }
+
+        if(!fileEntity.getFolder().equals(folderEntity)) {
+            throw new CustomException(NOT_EXISTS_FILE);
+        }
+
+        if(!fileEntity.getOwner().equals(userEntity)) {
+            throw new CustomException(NOT_EXISTS_FILE);
+        }
+
+        return downloadFileFromS3(fileEntity, folderEntity, response);
+    }
+
     private String uploadFileToS3(MultipartFile file, String filePath) throws IOException {
         String fileName = file.getOriginalFilename();
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -146,5 +180,30 @@ public class FileServiceImpl implements FileService {
     private void deleteFileInS3(String filePath) {
         DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, filePath);
         amazonS3Client.deleteObject(deleteObjectRequest);
+    }
+
+    private StreamingResponseBody downloadFileFromS3(FileEntity fileEntity,
+                                                     FolderEntity folderEntity,
+                                                     HttpServletResponse response){
+        String fileName = fileEntity.getName();
+        String filePath = folderEntity.getParentPath() + folderEntity.getName() + "/";
+
+        GetObjectRequest getObjectRequest = new GetObjectRequest(bucket, filePath + fileName);
+        S3Object s3Object = amazonS3Client.getObject(getObjectRequest);
+
+        InputStream inputStream = s3Object.getObjectContent();
+        response.setContentType(s3Object.getObjectMetadata().getContentType());
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        response.setHeader("Content-Length", String.valueOf(s3Object.getObjectMetadata().getContentLength()));
+
+        return outputStream -> {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+                outputStream.flush();
+            }
+            inputStream.close();
+        };
     }
 }

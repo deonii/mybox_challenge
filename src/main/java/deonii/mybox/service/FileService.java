@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public interface FileService {
-    ResponseDTO uploadFile(FileRequestDTO fileRequestDTO, UUID folderUuid, UUID userUuid) throws IOException;
+    ResponseDTO uploadFile(FileRequestDTO fileRequestDTO, UUID folderUuid, UUID userUuid);
 
     ResponseDTO deleteFile(UUID folderUuid, UUID fileUuid, UUID userUuid);
 

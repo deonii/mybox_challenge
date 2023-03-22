@@ -47,7 +47,7 @@ public class FileServiceImpl implements FileService {
     private FileDAO fileDAO;
 
     @Override
-    public ResponseDTO uploadFile(FileRequestDTO fileRequestDTO, UUID folderUuid, UUID userUuid) throws IOException {
+    public ResponseDTO uploadFile(FileRequestDTO fileRequestDTO, UUID folderUuid, UUID userUuid) {
         MultipartFile file = fileRequestDTO.getFile();
 
         if(file.isEmpty()) {
@@ -85,18 +85,22 @@ public class FileServiceImpl implements FileService {
 
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
 
-        String filePath = uploadFileToS3(file, path);
-
-        FileEntity fileEntity = new FileEntity(fileName, fileSize, fileExtension, filePath, folderEntity, userEntity);
+        userDAO.updateExtraVolume(userEntity, fileSize);
+        FileEntity fileEntity = new FileEntity(fileName, fileSize, fileExtension, path, folderEntity, userEntity);
         FileEntity savedFile = fileDAO.saveFile(fileEntity);
 
-        userDAO.updateExtraVolume(userEntity, fileSize);
+        try {
+            uploadFileToS3(file, path);
 
-        HashMap<String, Object> body = new HashMap<>();
-        body.put("saved_file", savedFile);
+            HashMap<String, Object> body = new HashMap<>();
+            body.put("saved_file", savedFile);
 
-        ResponseDTO responseDTO = new ResponseDTO(200, "SUCCESS", LocalDateTime.now(), body);
-        return responseDTO;
+            ResponseDTO responseDTO = new ResponseDTO(200, "SUCCESS", LocalDateTime.now(), body);
+            return responseDTO;
+        } catch (Exception e) {
+            fileDAO.deleteFile(savedFile);
+            throw new CustomException(FAIL_UPLOAD_FILE);
+        }
     }
 
     @Override

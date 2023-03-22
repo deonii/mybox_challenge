@@ -13,7 +13,6 @@ import deonii.mybox.data.entity.UserEntity;
 import deonii.mybox.error.CustomException;
 import deonii.mybox.service.FolderService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -148,8 +147,8 @@ public class FolderServiceImpl implements FolderService {
         String parentPath = parentFolderEntity.getParentPath() + parentFolderEntity.getName() + "/";
 
         deleteFolderInS3(folderName, parentPath);
-
         folderDAO.deleteFolder(folderEntity);
+
         ResponseDTO responseDTO = new ResponseDTO(200, "DELETE", LocalDateTime.now(), null);
         return responseDTO;
     }
@@ -200,7 +199,7 @@ public class FolderServiceImpl implements FolderService {
 
     public void downloadZip(FolderEntity folderEntity, HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + RandomStringUtils.randomAlphanumeric(6) + "-s3-download.zip" + "\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + folderEntity.getName() + "\"");
         String folderPath = folderEntity.getParentPath() + folderEntity.getName();
         final int INPUT_STREAM_BUFFER_SIZE = 2048;
 

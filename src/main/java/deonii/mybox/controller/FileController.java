@@ -27,7 +27,7 @@ public class FileController {
     public ResponseDTO uploadFile(@PathVariable UUID folderUuid,
                                    @Valid FileRequestDTO fileRequestDTO,
                                    HttpServletRequest request
-                                   ) throws IOException {
+                                   ) {
         UUID userUuid = userFunctions.getUserUuidFromRequest(request);
 
         ResponseDTO responseDTO = fileService.uploadFile(fileRequestDTO, folderUuid, userUuid);

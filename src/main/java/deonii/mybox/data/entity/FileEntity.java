@@ -1,11 +1,9 @@
 package deonii.mybox.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import deonii.mybox.data.dao.UserDAO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

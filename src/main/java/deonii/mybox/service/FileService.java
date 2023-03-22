@@ -1,9 +1,7 @@
 package deonii.mybox.service;
 
 import deonii.mybox.data.dto.FileRequestDTO;
-import deonii.mybox.data.dto.FileResponseDTO;
 import deonii.mybox.data.dto.ResponseDTO;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.servlet.http.HttpServletResponse;

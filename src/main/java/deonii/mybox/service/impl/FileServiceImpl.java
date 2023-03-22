@@ -2,7 +2,6 @@ package deonii.mybox.service.impl;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
-import com.amazonaws.util.IOUtils;
 import deonii.mybox.data.dao.FileDAO;
 import deonii.mybox.data.dao.FolderDAO;
 import deonii.mybox.data.dao.UserDAO;
@@ -15,11 +14,6 @@ import deonii.mybox.error.CustomException;
 import deonii.mybox.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -88,7 +82,6 @@ public class FileServiceImpl implements FileService {
         }
 
         String path = folderEntity.getParentPath() + folderEntity.getName() + "/";
-
 
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
 

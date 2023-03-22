@@ -1,6 +1,5 @@
 package deonii.mybox.data.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +11,12 @@ import java.util.HashMap;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResponseDTO {
+
     private int status;
+
     private String message;
+
     private LocalDateTime timestamp;
+
     private HashMap<String, Object> body;
 }

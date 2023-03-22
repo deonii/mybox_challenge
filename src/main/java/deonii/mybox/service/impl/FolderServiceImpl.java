@@ -13,17 +13,20 @@ import deonii.mybox.data.entity.UserEntity;
 import deonii.mybox.error.CustomException;
 import deonii.mybox.service.FolderService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static deonii.mybox.error.ErrorCode.*;
 
@@ -151,6 +154,25 @@ public class FolderServiceImpl implements FolderService {
         return responseDTO;
     }
 
+    @Override
+    public void downloadFolder(UUID folderUuid, UUID userUuid, HttpServletResponse response) throws IOException, InterruptedException {
+        UserEntity userEntity = userDAO.findByUuid(userUuid);
+        if (userEntity == null) {
+            throw new CustomException(NOT_EXISTS_UUID);
+        }
+
+        FolderEntity folderEntity = folderDAO.findByUuid(folderUuid);
+        if (folderEntity == null) {
+            throw new CustomException(NOT_EXISTS_FOLDER);
+        }
+
+        if (!folderEntity.getOwner().equals(userEntity)) {
+            throw new CustomException(NOT_EXISTS_FOLDER);
+        }
+
+        downloadZip(folderEntity, response);
+    }
+
 
     private void createFolderInS3(String folderName, String parentPath) {
         String folderPath = parentPath + folderName + "/";
@@ -174,5 +196,40 @@ public class FolderServiceImpl implements FolderService {
         // 폴더 내의 모든 객체를 삭제합니다.
         DeleteObjectsResult result = amazonS3Client.deleteObjects(deleteObjectsRequest);
         log.info("Deleted objects: {}", result.getDeletedObjects().toString());
+    }
+
+    public void downloadZip(FolderEntity folderEntity, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + RandomStringUtils.randomAlphanumeric(6) + "-s3-download.zip" + "\"");
+        String folderPath = folderEntity.getParentPath() + folderEntity.getName();
+        final int INPUT_STREAM_BUFFER_SIZE = 2048;
+
+        try (ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream())) {
+            ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
+            listObjectsRequest.setBucketName(bucket);
+            listObjectsRequest.setPrefix(folderPath);
+
+            ObjectListing s3Objects;
+            do {
+                s3Objects = amazonS3Client.listObjects(listObjectsRequest);
+                for (S3ObjectSummary s3ObjectSummary : s3Objects.getObjectSummaries()) {
+                    String fileName = s3ObjectSummary.getKey();
+                    S3Object s3Object = amazonS3Client.getObject(new GetObjectRequest(bucket, fileName));
+
+                    InputStream is = s3Object.getObjectContent();
+                    ZipEntry zipEntry = new ZipEntry(fileName);
+                    zipOut.putNextEntry(zipEntry);
+                    byte[] bytes = new byte[INPUT_STREAM_BUFFER_SIZE];
+                    int length;
+                    while ((length = is.read(bytes)) >= 0) {
+                        zipOut.write(bytes, 0, length);
+                    }
+                    zipOut.closeEntry();
+                    is.close();
+                    log.info("download success {}", fileName);
+                }
+                listObjectsRequest.setMarker(s3Objects.getNextMarker());
+            } while (s3Objects.isTruncated());
+        }
     }
 }

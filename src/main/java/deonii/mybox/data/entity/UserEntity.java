@@ -1,7 +1,6 @@
 package deonii.mybox.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import deonii.mybox.data.dto.UserRequestDTO;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;

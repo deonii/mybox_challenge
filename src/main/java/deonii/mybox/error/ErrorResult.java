@@ -7,8 +7,11 @@ import java.time.LocalDateTime;
 
 @Data
 public class ErrorResult {
+
     private int status;
+
     private String message;
+
     private LocalDateTime timestamp;
 
     public ErrorResult(int status, String message) {

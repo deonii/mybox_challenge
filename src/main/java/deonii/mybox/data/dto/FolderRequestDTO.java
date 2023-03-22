@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FolderRequestDTO {
+
     @NotBlank
     private String name;
 }

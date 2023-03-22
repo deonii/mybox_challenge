@@ -2,18 +2,16 @@ package deonii.mybox.controller;
 
 import deonii.mybox.data.dto.FolderRequestDTO;
 import deonii.mybox.data.dto.ResponseDTO;
-import deonii.mybox.error.CustomException;
 import deonii.mybox.functions.UserFunctions;
 import deonii.mybox.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.UUID;
-
-import static deonii.mybox.error.ErrorCode.NOT_AUTHORIZATION;
 
 @RestController
 public class FolderController {
@@ -50,5 +48,13 @@ public class FolderController {
         UUID userUuid = userFunctions.getUserUuidFromRequest(request);
         ResponseDTO responseDTO = folderService.deleteFolder(folderUuid, userUuid);
         return responseDTO;
+    }
+
+    @GetMapping("/folder/{folderUuid}/zip")
+    public void downloadFolder(@PathVariable UUID folderUuid,
+                               HttpServletRequest request,
+                               HttpServletResponse response) throws IOException, InterruptedException {
+        UUID userUuid = userFunctions.getUserUuidFromRequest(request);
+        folderService.downloadFolder(folderUuid, userUuid, response);
     }
 }

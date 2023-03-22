@@ -8,7 +8,10 @@ import java.util.UUID;
 
 public interface FolderRepository extends JpaRepository<FolderEntity, UUID> {
     FolderEntity findByUuid(UUID uuid);
+
     FolderEntity findByNameAndParentPath(String name, String parentPath);
+
     boolean existsByNameAndParentPath(String name, String parentPath);
+
     List<FolderEntity> findByParent_Uuid(UUID folderUuid);
 }

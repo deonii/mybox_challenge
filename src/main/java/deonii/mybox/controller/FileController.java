@@ -5,8 +5,6 @@ import deonii.mybox.data.dto.ResponseDTO;
 import deonii.mybox.functions.UserFunctions;
 import deonii.mybox.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
@@ -47,7 +45,7 @@ public class FileController {
     }
 
     @GetMapping("/folder/{folderUuid}/file/{fileUuid}")
-    public StreamingResponseBody getFile(@PathVariable UUID folderUuid,
+    public StreamingResponseBody downloadFile(@PathVariable UUID folderUuid,
                                          @PathVariable UUID fileUuid,
                                          HttpServletRequest request,
                                          HttpServletResponse response) {

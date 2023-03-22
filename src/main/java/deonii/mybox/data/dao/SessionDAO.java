@@ -1,7 +1,6 @@
 package deonii.mybox.data.dao;
 
 import deonii.mybox.data.entity.SessionEntity;
-import deonii.mybox.data.entity.UserEntity;
 
 import java.util.UUID;
 

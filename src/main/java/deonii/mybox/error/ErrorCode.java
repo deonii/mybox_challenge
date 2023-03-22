@@ -18,8 +18,8 @@ public enum ErrorCode {
     NOT_EXISTS_FOLDER(400, "존재하지 않는 folder 입니다."),
     CAN_NOT_ROOT_FOLDER(400, "root folder는 삭제할 수 없습니다."),
     NOT_EXISTS_FILE(400, "존재하지 않는 file 입니다."),
-    NOT_AUTHORIZATION(401, "로그인이 필요합니다.");
-//    INTERNAL_SERVER_ERROR(500, "서버 에러입니다.");
+    NOT_AUTHORIZATION(401, "로그인이 필요합니다."),
+    INTERNAL_SERVER_ERROR(500, "서버 에러입니다.");
 
     private final int status;
     private final String message;

@@ -13,4 +13,6 @@ public interface FolderDAO {
     boolean existsByNameAndParentPath(String name, String parentPath);
 
     List<FolderEntity> findByParentUuid(UUID folderUuid);
+
+    void deleteFolder(FolderEntity folderEntity);
 }

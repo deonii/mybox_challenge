@@ -43,4 +43,12 @@ public class FolderController {
         ResponseDTO responseDTO = folderService.browseFolder(folderUuid, userUuid);
         return responseDTO;
     }
+
+    @DeleteMapping("/folder/{folderUuid}")
+    public ResponseDTO deleteFolder(@PathVariable UUID folderUuid,
+                                    HttpServletRequest request) {
+        UUID userUuid = userFunctions.getUserUuidFromRequest(request);
+        ResponseDTO responseDTO = folderService.deleteFolder(folderUuid, userUuid);
+        return responseDTO;
+    }
 }

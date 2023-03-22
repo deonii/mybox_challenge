@@ -48,4 +48,9 @@ public class FolderDAOImpl implements FolderDAO {
         List<FolderEntity> folderEntityList = folderRepository.findByParent_Uuid(folderUuid);
         return folderEntityList;
     }
+
+    @Override
+    public void deleteFolder(FolderEntity folderEntity) {
+        folderRepository.delete(folderEntity);
+    }
 }

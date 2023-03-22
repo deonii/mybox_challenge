@@ -55,8 +55,6 @@ public class FileServiceImpl implements FileService {
     @Override
     public ResponseDTO uploadFile(FileRequestDTO fileRequestDTO, UUID folderUuid, UUID userUuid) throws IOException {
         MultipartFile file = fileRequestDTO.getFile();
-        String fileName = file.getOriginalFilename();
-        Long fileSize = file.getSize()/1000;
 
         if(file.isEmpty()) {
             throw new CustomException(FILE_DOES_NOT_EXIST);
@@ -66,6 +64,8 @@ public class FileServiceImpl implements FileService {
         if(userEntity == null) {
             throw new CustomException(NOT_EXISTS_UUID);
         }
+
+        Long fileSize = file.getSize()/1024;
 
         if(userEntity.getExtraVolume() < fileSize) {
             throw new CustomException(NOT_ENOUGH_VOLUME);
@@ -79,6 +79,8 @@ public class FileServiceImpl implements FileService {
         if(!folderEntity.getOwner().equals(userEntity)) {
             throw new CustomException(NOT_EXISTS_FOLDER);
         }
+
+        String fileName = file.getOriginalFilename();
 
         boolean isExists = fileDAO.existsByNameAndFolderUuid(fileName, folderUuid);
         if(isExists) {

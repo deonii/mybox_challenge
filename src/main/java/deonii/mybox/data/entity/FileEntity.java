@@ -1,12 +1,15 @@
 package deonii.mybox.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import deonii.mybox.data.dao.UserDAO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -50,7 +53,7 @@ public class FileEntity {
     @JoinColumn(name = "folder_uuid")
     private FolderEntity folder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "user_uuid")
     private UserEntity owner;
@@ -62,5 +65,11 @@ public class FileEntity {
         this.path = path;
         this.folder = folder;
         this.owner = user;
+    }
+
+    @PreRemove
+    @Transactional
+    public void updateVolume() {
+        owner.setExtraVolume(owner.getExtraVolume() + size);
     }
 }

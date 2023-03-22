@@ -12,4 +12,6 @@ public interface FolderService {
     ResponseDTO createFolder(FolderRequestDTO folderRequestDTO, UUID parentUuid, UUID userUuid);
 
     ResponseDTO browseFolder(UUID folderUuid, UUID userUuid);
+
+    ResponseDTO deleteFolder(UUID folderUuid, UUID userUuid);
 }

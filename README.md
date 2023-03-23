@@ -57,9 +57,19 @@ logging:
       amazonaws:
         util:
           EC2MetadataUtils: error
+
+# DB 설정
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/{DB 이름}
+    username: {DB 사용자 이름}
+    password: {DB 사용자 비밀번호}
+    driver-class-name: org.postgresql.Driver # 본인이 사용하는 DB 설정
 ```
 
-저장 후 실행합니다.
+실행을 위해서는 데이터베이스와 AWS 계정이 필요합니다.
+
+설치 및 설정 후 실행합니다.
 
 > ./gradlew bootRun
 

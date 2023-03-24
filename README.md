@@ -1,4 +1,4 @@
-# NUMBLE My Box 챌린지
+# My Box 챌린지
 
 ----
 
